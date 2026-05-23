@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News Digest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0d;
+    --ink-muted: #5a5750;
+    --ink-faint: #c2bfb8;
+    --paper: #f5f2eb;
+    --paper-warm: #ede9df;
+    --paper-card: #faf8f4;
+    --accent: #c0392b;
+    --accent-warm: #e8d5b7;
+    --rule: #d4cfc5;
+    --col-w: 760px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* masthead */
+  .masthead {
+    border-bottom: 3px double var(--ink);
+    padding: 2rem 0 1.25rem;
+    text-align: center;
+    background: var(--paper);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .masthead-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .masthead h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .masthead-sub {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--ink-faint);
+    display: inline-block;
+    padding-top: 0.4rem;
+  }
+
+  /* search bar area */
+  .search-area {
+    max-width: var(--col-w);
+    margin: 0 auto;
+    padding: 1.8rem 1.5rem 0;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 0;
+    border: 1.5px solid var(--ink);
+    background: var(--paper-card);
+    overflow: hidden;
+  }
+
+  .search-row input[type="text"] {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--ink);
+  }
+
+  .search-row input[type="text"]::placeholder { color: var(--ink-faint); }
+
+  .count-select {
+    border-left: 1.5px solid var(--ink);
+    border-right: 1.5px solid var(--ink);
+    padding: 0.75rem 0.75rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    background: var(--paper-warm);
+    color: var(--ink);
+    cursor: pointer;
+    appearance: none;
+    outline: none;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .fetch-btn {
+    padding: 0.75rem 1.4rem;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .fetch-btn:hover { background: var(--accent); }
+  .fetch-btn:disabled { background: var(--ink-faint); cursor: not-allowed; }
+
+  /* status bar */
+  .status-bar {
+    max-width: var(--col-w);
+    margin: 0.8rem auto 0;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    min-height: 1.6rem;
+  }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--ink-faint);
+    flex-shrink: 0;
+  }
+  .dot.green { background: #27ae60; }
+  .dot.red   { background: var(--accent); }
+  .dot.pulse {
+    animation: pulse 1s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.3; }
+  }
+
+  /* main content */
+  .content {
+    max-width: var(--col-w);
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* topic header */
+  .topic-header {
+    border-top: 3px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 0.6rem 0;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .topic-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-transform: capitalize;
+  }
+
+  .topic-meta {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-left: auto;
+  }
+
+  /* article card */
+  .article {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-bottom: 1px solid var(--rule);
+    padding: 1.5rem 0;
+    gap: 0.6rem;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.4s forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: none; }
+  }
+
+  .article-number {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .article-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .article-title:hover { color: var(--accent); }
+
+  .article-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    align-items: center;
+  }
+
+  .article-source {
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .article-summary {
+    font-size: 0.97rem;
+    line-height: 1.7;
+    color: var(--ink);
+    background: var(--paper-warm);
+    border-left: 3px solid var(--accent);
+    padding: 0.7rem 1rem;
+    min-height: 2.8rem;
+  }
+
+  .article-summary .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--accent);
+    vertical-align: text-bottom;
+    animation: blink 0.7s steps(1) infinite;
+    margin-left: 1px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .article-link {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.2rem;
+  }
+  .article-link:hover { color: var(--accent); }
+  .article-link::after { content: '→'; }
+
+  /* empty / error states */
+  .empty-state {
+    text-align: center;
+    padding: 5rem 2rem;
+    color: var(--ink-muted);
+  }
+
+  .empty-state .big {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    opacity: 0.15;
+    margin-bottom: 1rem;
+    color: var(--ink);
+  }
+
+  .empty-state p {
+    font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .error-msg {
+    background: #fdf0f0;
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.2rem;
+    font-size: 0.9rem;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+
+  /* skeleton loader */
+  .skeleton-article {
+    border-bottom: 1px solid var(--rule);
+    padding: 1.5rem 0;
+  }
+
+  .skel {
+    background: linear-gradient(90deg, var(--paper-warm) 25%, var(--rule) 50%, var(--paper-warm) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 2px;
+  }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  .skel-num  { height: 10px; width: 60px; margin-bottom: 10px; }
+  .skel-title { height: 22px; width: 85%; margin-bottom: 8px; }
+  .skel-title2 { height: 22px; width: 55%; margin-bottom: 12px; }
+  .skel-meta  { height: 10px; width: 40%; margin-bottom: 14px; }
+  .skel-sum   { height: 56px; width: 100%; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <p class="masthead-eyebrow">Powered by Ollama · NewsAPI</p>
+  <h1>THE DIGEST</h1>
+  <span class="masthead-sub">AI-Summarized News</span>
+</header>
+
+<div class="search-area">
+  <div class="search-row">
+    <input type="text" id="topicInput" placeholder="Enter a topic — technology, climate, finance…" value="technology">
+    <select class="count-select" id="countSelect">
+      <option value="3">3</option>
+      <option value="5" selected>5</option>
+      <option value="8">8</option>
+      <option value="10">10</option>
+    </select>
+    <button class="fetch-btn" id="fetchBtn" onclick="runDigest()">Fetch →</button>
+  </div>
+</div>
+
+<div class="status-bar" id="statusBar">
+  <span class="dot" id="statusDot"></span>
+  <span id="statusText">Enter a topic and press Fetch</span>
+</div>
+
+<main class="content" id="content">
+  <div class="empty-state">
+    <div class="big">✦</div>
+    <p>Your digest will appear here</p>
+  </div>
+</main>
+
+<script>
+const API = '';  // same origin — FastAPI serves this file
+
+function setStatus(msg, state = 'idle') {
+  document.getElementById('statusText').textContent = msg;
+  const dot = document.getElementById('statusDot');
+  dot.className = 'dot';
+  if (state === 'ok')      { dot.classList.add('green'); }
+  if (state === 'err')     { dot.classList.add('red'); }
+  if (state === 'loading') { dot.classList.add('pulse'); }
+}
+
+function skeletons(n) {
+  return Array.from({length: n}, () => `
+    <div class="skeleton-article">
+      <div class="skel skel-num"></div>
+      <div class="skel skel-title"></div>
+      <div class="skel skel-title2"></div>
+      <div class="skel skel-meta"></div>
+      <div class="skel skel-sum"></div>
+    </div>
+  `).join('');
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  try {
+    return new Date(iso).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  } catch { return ''; }
+}
+
+async function streamSummary(summaryEl, title, description) {
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  summaryEl.appendChild(cursor);
+
+  const params = new URLSearchParams({ title, description });
+  const res = await fetch(`${API}/api/summarize?${params}`);
+  if (!res.ok || !res.body) {
+    summaryEl.textContent = 'Could not summarize.';
+    return;
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let text = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    text += decoder.decode(value, { stream: true });
+    summaryEl.textContent = text;
+    summaryEl.appendChild(cursor);
+  }
+
+  cursor.remove();
+}
+
+async function runDigest() {
+  const topic = document.getElementById('topicInput').value.trim() || 'technology';
+  const count = parseInt(document.getElementById('countSelect').value);
+  const btn   = document.getElementById('fetchBtn');
+  const content = document.getElementById('content');
+
+  btn.disabled = true;
+  setStatus('Fetching articles…', 'loading');
+  content.innerHTML = skeletons(count);
+
+  let articles;
+  try {
+    const res  = await fetch(`${API}/api/news?topic=${encodeURIComponent(topic)}&count=${count}`);
+    const data = await res.json();
+
+    if (data.error) {
+      content.innerHTML = `<div class="error-msg">API Error: ${data.error}</div>`;
+      setStatus(data.error, 'err');
+      btn.disabled = false;
+      return;
+    }
+    articles = data.articles;
+  } catch (e) {
+    content.innerHTML = `<div class="error-msg">Could not reach the server. Is FastAPI running?</div>`;
+    setStatus('Server unreachable', 'err');
+    btn.disabled = false;
+    return;
+  }
+
+  if (!articles.length) {
+    content.innerHTML = `<div class="empty-state"><div class="big">∅</div><p>No articles found for "${topic}"</p></div>`;
+    setStatus('No results', 'err');
+    btn.disabled = false;
+    return;
+  }
+
+  // Render article shells
+  const now = new Date().toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'});
+  content.innerHTML = `
+    <div class="topic-header">
+      <span class="topic-label">${topic}</span>
+      <span class="topic-meta">${now} · ${articles.length} articles</span>
+    </div>
+    ${articles.map((a, i) => `
+      <article class="article" id="art-${i}" style="animation-delay:${i * 60}ms">
+        <span class="article-number">No. ${String(i+1).padStart(2,'0')}</span>
+        <a class="article-title" href="${a.url}" target="_blank" rel="noopener">${a.title}</a>
+        <div class="article-meta">
+          <span class="article-source">${a.source}</span>
+          ${a.publishedAt ? `<span>${formatDate(a.publishedAt)}</span>` : ''}
+        </div>
+        <div class="article-summary" id="sum-${i}"></div>
+        <a class="article-link" href="${a.url}" target="_blank" rel="noopener">Read full article</a>
+      </article>
+    `).join('')}
+  `;
+
+  setStatus(`Summarizing ${articles.length} articles with Ollama…`, 'loading');
+
+  // Stream summaries one by one
+  for (let i = 0; i < articles.length; i++) {
+    const a = articles[i];
+    setStatus(`Summarizing ${i+1} / ${articles.length}…`, 'loading');
+    const el = document.getElementById(`sum-${i}`);
+    await streamSummary(el, a.title, a.description);
+  }
+
+  setStatus(`Done · ${articles.length} articles summarized`, 'ok');
+  btn.disabled = false;
+}
+
+// Check Ollama health on load
+(async () => {
+  try {
+    const r = await fetch(`${API}/api/health`);
+    const d = await r.json();
+    if (d.ollama === 'ok') setStatus('Ollama is running · ready', 'ok');
+    else setStatus('Ollama offline — run: ollama serve', 'err');
+  } catch {
+    setStatus('Server not reachable', 'err');
+  }
+})();
+
+// Allow Enter key
+document.getElementById('topicInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runDigest();
+});
+</script>
+</body>
+</html>
