@@ -3,17 +3,18 @@ from abc import ABC, abstractmethod
 
 # Abstract Class
 class Bank(ABC):
-
+    
     @abstractmethod
     def interest_rate(self):
-        pass
+        print("tarun")
 
 
 # Child Class 1
 class SBI(Bank):
+    
 
-    def interest_rate(self):
-        print("SBI Interest Rate = 6.5%")
+    super().interest_rate()
+    print("SBI Interest Rate = 6.5%")
 
 
 # Child Class 2

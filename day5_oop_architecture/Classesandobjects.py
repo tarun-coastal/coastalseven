@@ -29,7 +29,7 @@ def get_student():
 
 def main():
     student=get_student()
-    # student.house="a"
+    student.house="a"
     print(f"{student.name} is from {student.house}")
     print(student)
 
